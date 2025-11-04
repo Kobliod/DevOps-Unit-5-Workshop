@@ -26,3 +26,21 @@ jobs:
 
       - name: Run tests
         run: dotnet test DotnetTemplate.sln --verbosity normal
+       
+
+  build-typescript:
+    name: Build and test TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm install
+        working-directory: DotnetTemplate.Web
+      - run: npm run build
+        working-directory: DotnetTemplate.Web
+      - run: npm run lint
+        working-directory: DotnetTemplate.Web
+      - run: npm t
+        working-directory: DotnetTemplate.Web
