@@ -1,15 +1,14 @@
 name: ContinuousIntegration
-on: [push]
-jobs:
-  build:
-    name: Build and test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-  
-  build-dotnet:
-    runs-on: ubuntu-latest
 
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-dotnet:
+    name: Build and Test .NET
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -22,25 +21,34 @@ jobs:
         run: dotnet restore
 
       - name: Build C# project
-        run: dotnet build --configuration Release 
+        run: dotnet build --configuration Release
 
       - name: Run tests
         run: dotnet test DotnetTemplate.sln --verbosity normal
-       
 
   build-typescript:
-    name: Build and test TypeScript
+    name: Build and Test TypeScript
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
-      - run: npm install
+
+      - name: Install dependencies
+        run: npm ci
         working-directory: DotnetTemplate.Web
-      - run: npm run build
+
+      - name: Build TypeScript project
+        run: npm run build
         working-directory: DotnetTemplate.Web
-      - run: npm run lint
+
+      - name: Lint
+        run: npm run lint
         working-directory: DotnetTemplate.Web
-      - run: npm t
+
+      - name: Run tests
+        run: npm test
         working-directory: DotnetTemplate.Web
